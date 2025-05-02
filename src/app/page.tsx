@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchTopTariffs, TariffData } from '../services/censusService';
 import TariffChart from '../components/TariffChart';
 import LineChartCard from '../components/LineChartCard';
+import PriceImpactSection from '../components/PriceImpactSection';
 
 function ChartSkeleton() {
   return (
@@ -175,6 +176,7 @@ export default function Home() {
           </div>
         </aside>
       </main>
+      <PriceImpactSection />
     </div>
   );
 } 
