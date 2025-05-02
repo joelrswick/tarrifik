@@ -21,6 +21,7 @@ export default function Home() {
   const [lineLoading, setLineLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lineError, setLineError] = useState<string | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState('China');
 
   useEffect(() => {
     const loadData = async () => {
@@ -38,8 +39,9 @@ export default function Home() {
 
   useEffect(() => {
     const loadLineData = async () => {
+      setLineLoading(true);
       try {
-        const res = await fetch('/api/monthly-imports?year=2023&country=China');
+        const res = await fetch(`/api/monthly-imports?year=2023&country=${encodeURIComponent(selectedCountry)}`);
         const json = await res.json();
         setLineData(json.data);
       } catch (err) {
@@ -49,7 +51,7 @@ export default function Home() {
       }
     };
     loadLineData();
-  }, []);
+  }, [selectedCountry]);
 
   return (
     <div className="min-h-screen bg-[#f7f7fa] font-sans">
@@ -84,7 +86,25 @@ export default function Home() {
         <section className="md:col-span-2 flex flex-col gap-8">
           {/* Featured Chart (Dark Line Chart) */}
           <div className="bg-[#18192b] rounded-xl p-6 shadow-lg w-full max-w-2xl mx-auto">
-            <h3 className="text-lg font-bold text-white mb-4">Monthly Import Value: China (2023)</h3>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-bold text-white">Monthly Import Value: {selectedCountry} (2023)</h3>
+              <select
+                className="rounded px-2 py-1 bg-[#23244a] text-white border border-[#6c47ff] focus:outline-none focus:ring-2 focus:ring-[#6c47ff]"
+                value={selectedCountry}
+                onChange={e => setSelectedCountry(e.target.value)}
+              >
+                <option value="China">China</option>
+                <option value="Mexico">Mexico</option>
+                <option value="Canada">Canada</option>
+                <option value="Germany">Germany</option>
+                <option value="Japan">Japan</option>
+                <option value="South Korea">South Korea</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="India">India</option>
+                <option value="France">France</option>
+                <option value="Brazil">Brazil</option>
+              </select>
+            </div>
             {lineLoading ? (
               <ChartSkeleton />
             ) : lineError ? (
