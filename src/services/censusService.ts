@@ -32,8 +32,8 @@ export async function fetchTariffData(): Promise<TariffData[]> {
   const endpoint = 'timeseries/intltrade/imports';
   const params = {
     get: 'YEAR,MONTH,CTY_CODE,CTY_NAME,GEN_VAL_MO',
+    YEAR: '2022', // You can change to '2023' for the most recent year
     CTY_CODE: '5700', // China
-    YEAR: '2023',
     key: CENSUS_API_KEY
   };
 
