@@ -114,6 +114,8 @@ export default function Home() {
               <ChartSkeleton />
             ) : lineError ? (
               <p className="text-red-400">Error: {lineError}</p>
+            ) : Array.isArray(lineData) && lineData.length === 0 ? (
+              <p className="text-gray-300">No data available for this selection.</p>
             ) : (
               <>
                 <LineChartCard

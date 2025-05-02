@@ -27,13 +27,18 @@ export async function fetchTariffData(year: string = '2023'): Promise<TariffData
   };
 
   const queryParams = new URLSearchParams(params);
-  const response = await fetch(`${CENSUS_API_BASE_URL}/${endpoint}?${queryParams.toString()}`);
+  const url = `${CENSUS_API_BASE_URL}/${endpoint}?${queryParams.toString()}`;
+  // eslint-disable-next-line no-console
+  console.log('Census API request:', url);
+  const response = await fetch(url);
   
   if (!response.ok) {
     throw new Error(`Census API error: ${response.statusText}`);
   }
 
   const data: CensusData = await response.json();
+  // eslint-disable-next-line no-console
+  console.log('Census API raw response:', JSON.stringify(data).slice(0, 500));
   if (!data || !Array.isArray(data.data)) {
     throw new Error('No valid data returned from Census API');
   }
