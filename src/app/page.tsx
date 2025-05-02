@@ -22,6 +22,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [lineError, setLineError] = useState<string | null>(null);
   const [selectedCountry, setSelectedCountry] = useState('China');
+  const [selectedYear] = useState('2022'); // Hardcoded for debugging
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,9 +42,12 @@ export default function Home() {
     const loadLineData = async () => {
       setLineLoading(true);
       try {
-        const res = await fetch(`/api/monthly-imports?year=2023&country=${encodeURIComponent(selectedCountry)}`);
+        const res = await fetch(`/api/monthly-imports?year=${selectedYear}&country=${encodeURIComponent(selectedCountry)}`);
         const json = await res.json();
         setLineData(json.data);
+        if (typeof window !== 'undefined') {
+          console.log('Line chart API data:', json.data);
+        }
       } catch (err) {
         setLineError(err instanceof Error ? err.message : 'Failed to load chart data');
       } finally {
@@ -51,7 +55,7 @@ export default function Home() {
       }
     };
     loadLineData();
-  }, [selectedCountry]);
+  }, [selectedCountry, selectedYear]);
 
   return (
     <div className="min-h-screen bg-[#f7f7fa] font-sans">
@@ -87,7 +91,7 @@ export default function Home() {
           {/* Featured Chart (Dark Line Chart) */}
           <div className="bg-[#18192b] rounded-xl p-6 shadow-lg w-full max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">Monthly Import Value: {selectedCountry} (2023)</h3>
+              <h3 className="text-lg font-bold text-white">Monthly Import Value: {selectedCountry} ({selectedYear})</h3>
               <select
                 className="rounded px-2 py-1 bg-[#23244a] text-white border border-[#6c47ff] focus:outline-none focus:ring-2 focus:ring-[#6c47ff]"
                 value={selectedCountry}
@@ -110,13 +114,16 @@ export default function Home() {
             ) : lineError ? (
               <p className="text-red-400">Error: {lineError}</p>
             ) : (
-              <LineChartCard
-                data={lineData}
-                title=""
-                series={[
-                  { name: 'Import Value', dataKey: 'value', color: '#6c47ff' },
-                ]}
-              />
+              <>
+                <LineChartCard
+                  data={lineData}
+                  title=""
+                  series={[
+                    { name: 'Import Value', dataKey: 'value', color: '#6c47ff' },
+                  ]}
+                />
+                <pre className="text-xs text-white bg-[#23244a] rounded p-2 mt-4 overflow-x-auto">{JSON.stringify(lineData, null, 2)}</pre>
+              </>
             )}
           </div>
           {/* Tariff Bar Chart */}
