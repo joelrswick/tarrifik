@@ -1,4 +1,3 @@
-import React from 'react'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
@@ -6,8 +5,8 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Tarrifik - Live Tariff Data Tracker',
-  description: 'Track and visualize live tariff data from government sources',
+  title: 'Tariff Times',
+  description: 'Live tariff data and analysis',
 }
 
 export default function RootLayout({
@@ -18,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="min-h-screen bg-gray-50">
+        <main className="min-h-screen bg-white">
           {children}
         </main>
       </body>

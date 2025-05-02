@@ -1,29 +1,35 @@
-# Tarrifik - Live Tariff Data Tracker
+# Tariff Times
 
-A Next.js application that tracks and visualizes live tariff data from government sources.
+A Next.js application for tracking and analyzing live tariff data from government sources like the U.S. Census Bureau.
 
-## Features
-
-- Real-time tariff data from Census Bureau
-- Interactive data visualization
-- Filtering capabilities
-- Multiple view modes (table and chart)
-
-## Local Development
+## Setup
 
 1. Clone the repository
 2. Install dependencies:
    ```bash
    npm install
    ```
-3. Create a `.env.local` file with your Census API key:
+3. Create a `.env.local` file in the root directory and add your Census API key:
    ```
-   CENSUS_API_KEY=your_api_key_here
+   NEXT_PUBLIC_CENSUS_API_KEY=your_census_api_key_here
    ```
 4. Run the development server:
    ```bash
    npm run dev
    ```
+
+## Features
+
+- Real-time tariff data from the U.S. Census Bureau
+- Data visualization and analysis
+- Modern, responsive design
+
+## Tech Stack
+
+- Next.js
+- TypeScript
+- Tailwind CSS
+- U.S. Census Bureau API
 
 ## Deployment
 

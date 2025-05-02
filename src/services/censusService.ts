@@ -1,70 +1,22 @@
-import axios from 'axios';
+const CENSUS_API_KEY = process.env.NEXT_PUBLIC_CENSUS_API_KEY;
+const CENSUS_API_BASE_URL = 'https://api.census.gov/data';
 
-interface CensusData {
-  [key: string]: string | number;
+export interface CensusData {
+  // Define your Census data interface here
+  // This will depend on the specific data you're fetching
 }
 
-interface CensusResponse {
-  data: CensusData[];
-  metadata: {
-    [key: string]: any;
-  };
-}
+export async function fetchCensusData(endpoint: string, params: Record<string, string>): Promise<CensusData> {
+  const queryParams = new URLSearchParams({
+    ...params,
+    key: CENSUS_API_KEY || '',
+  });
 
-export class CensusService {
-  private readonly apiKey: string;
-  private readonly baseUrl: string = 'https://api.census.gov/data/timeseries/intltrade/exports';
-
-  constructor() {
-    const apiKey = process.env.CENSUS_API_KEY;
-    if (!apiKey) {
-      throw new Error('CENSUS_API_KEY environment variable is not set');
-    }
-    this.apiKey = apiKey;
+  const response = await fetch(`${CENSUS_API_BASE_URL}/${endpoint}?${queryParams.toString()}`);
+  
+  if (!response.ok) {
+    throw new Error(`Census API error: ${response.statusText}`);
   }
 
-  private async fetchData(endpoint: string, params: Record<string, string>): Promise<CensusResponse> {
-    try {
-      const response = await axios.get<CensusData[]>(`${this.baseUrl}/${endpoint}`, {
-        params: {
-          ...params,
-          key: this.apiKey,
-        },
-      });
-
-      return {
-        data: response.data,
-        metadata: response.headers,
-      };
-    } catch (error: any) {
-      if (error.response) {
-        throw new Error(`Census API Error: ${error.response.data?.error || error.message}`);
-      }
-      throw error;
-    }
-  }
-
-  async getExportsByEndUse(params: {
-    time: string;
-    enduse?: string;
-    state?: string;
-  }): Promise<CensusResponse> {
-    return this.fetchData('enduse', params);
-  }
-
-  async getExportsByHS(params: {
-    time: string;
-    hs?: string;
-    state?: string;
-  }): Promise<CensusResponse> {
-    return this.fetchData('hs', params);
-  }
-
-  async getExportsByNAICS(params: {
-    time: string;
-    naics?: string;
-    state?: string;
-  }): Promise<CensusResponse> {
-    return this.fetchData('naics', params);
-  }
+  return response.json();
 } 
