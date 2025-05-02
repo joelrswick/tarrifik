@@ -2,13 +2,8 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { fetchMonthlyImportSeries } from '../../services/censusService';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { country = 'China', year = '2022', commodity = '' } = req.query;
   try {
-    const data = await fetchMonthlyImportSeries({
-      country: String(country),
-      year: String(year),
-      commodity: String(commodity),
-    });
+    const data = await fetchMonthlyImportSeries();
     // Cache for 1 hour
     res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate');
     res.status(200).json({ data });

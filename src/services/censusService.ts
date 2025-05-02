@@ -14,69 +14,71 @@ export interface TariffData {
   month?: string;
 }
 
-export async function fetchTariffData(year: string = '2023'): Promise<TariffData[]> {
+function getLast12MonthsRange(): { from: string; to: string } {
+  const now = new Date();
+  now.setDate(1); // Set to first of month for consistency
+  const to = now.getFullYear().toString() + (now.getMonth() + 1).toString().padStart(2, '0');
+  const lastYear = new Date(now);
+  lastYear.setMonth(now.getMonth() - 11);
+  const from = lastYear.getFullYear().toString() + (lastYear.getMonth() + 1).toString().padStart(2, '0');
+  return { from, to };
+}
+
+export async function fetchTariffData(): Promise<TariffData[]> {
   if (!CENSUS_API_KEY) {
     throw new Error('Census API key is not configured');
   }
 
   const endpoint = 'timeseries/intltrade/imports';
+  const { from, to } = getLast12MonthsRange();
   const params = {
-    get: 'COMMODITY,CTY_CODE,CTY_NAME,GEN_VAL_MO,GEN_VAL_YR,MONTH',
-    for: 'time:' + year,
+    get: 'YEAR,MONTH,CTY_CODE,CTY_NAME,GEN_VAL_MO',
+    CTY_CODE: '5700', // China as a working example
+    time: `from ${from} to ${to}`,
     key: CENSUS_API_KEY
   };
 
   const queryParams = new URLSearchParams(params);
   const url = `${CENSUS_API_BASE_URL}/${endpoint}?${queryParams.toString()}`;
   // eslint-disable-next-line no-console
-  console.log('Census API request:', url);
+  console.error('Census API request:', url);
   const response = await fetch(url);
   
   if (!response.ok) {
     throw new Error(`Census API error: ${response.statusText}`);
   }
 
-  const data: CensusData = await response.json();
+  const data = await response.json();
   // eslint-disable-next-line no-console
-  console.log('Census API raw response:', JSON.stringify(data).slice(0, 500));
-  if (!data || !Array.isArray(data.data)) {
+  console.error('Census API raw response:', JSON.stringify(data).slice(0, 500));
+  if (!data || !Array.isArray(data) || data.length < 2) {
     throw new Error('No valid data returned from Census API');
   }
-  // Transform the data into a more usable format
-  return data.data.map(row => ({
+  // The first row is headers
+  const headers = data[0];
+  const rows = data.slice(1);
+  return rows.map((row: string[]) => ({
     year: row[0],
-    commodity: row[1],
+    month: row[1],
     country: row[3],
     value: parseFloat(row[4]) || 0,
-    month: row[5],
+    commodity: '', // Not used in this query
   }));
 }
 
-export async function fetchTopTariffs(year: string = '2023', limit: number = 10): Promise<TariffData[]> {
-  const data = await fetchTariffData(year);
+export async function fetchTopTariffs(limit: number = 10): Promise<TariffData[]> {
+  const data = await fetchTariffData();
   return data
     .sort((a, b) => b.value - a.value)
     .slice(0, limit);
 }
 
 // New: Fetch monthly import values for a given country (e.g., China) for the last year
-export async function fetchMonthlyImportSeries({
-  year = '2023',
-  country = 'China',
-  commodity = '',
-}: {
-  year?: string;
-  country?: string;
-  commodity?: string;
-}): Promise<{ label: string; value: number }[]> {
-  const data = await fetchTariffData(year);
-  // Filter by country and/or commodity
-  const filtered = data.filter(
-    d => (!country || d.country === country) && (!commodity || d.commodity === commodity)
-  );
+export async function fetchMonthlyImportSeries(): Promise<{ label: string; value: number }[]> {
+  const data = await fetchTariffData();
   // Group by month
   const byMonth: Record<string, number> = {};
-  filtered.forEach(d => {
+  data.forEach(d => {
     if (d.month) {
       byMonth[d.month] = (byMonth[d.month] || 0) + d.value;
     }
