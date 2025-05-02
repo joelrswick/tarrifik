@@ -1,9 +1,18 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { fetchTopTariffs, TariffData, fetchMonthlyImportSeries } from '../services/censusService';
+import { fetchTopTariffs, TariffData } from '../services/censusService';
 import TariffChart from '../components/TariffChart';
 import LineChartCard from '../components/LineChartCard';
+
+function ChartSkeleton() {
+  return (
+    <div className="bg-[#18192b] rounded-xl p-6 shadow-lg w-full max-w-2xl mx-auto animate-pulse">
+      <div className="h-8 w-1/3 bg-[#23244a] rounded mb-6" />
+      <div className="h-72 w-full bg-[#23244a] rounded" />
+    </div>
+  );
+}
 
 export default function Home() {
   const [tariffData, setTariffData] = useState<TariffData[]>([]);
@@ -30,8 +39,9 @@ export default function Home() {
   useEffect(() => {
     const loadLineData = async () => {
       try {
-        const data = await fetchMonthlyImportSeries({ year: '2023', country: 'China' });
-        setLineData(data);
+        const res = await fetch('/api/monthly-imports?year=2023&country=China');
+        const json = await res.json();
+        setLineData(json.data);
       } catch (err) {
         setLineError(err instanceof Error ? err.message : 'Failed to load chart data');
       } finally {
@@ -76,7 +86,7 @@ export default function Home() {
           <div className="bg-[#18192b] rounded-xl p-6 shadow-lg w-full max-w-2xl mx-auto">
             <h3 className="text-lg font-bold text-white mb-4">Monthly Import Value: China (2023)</h3>
             {lineLoading ? (
-              <p className="text-gray-300">Loading chart...</p>
+              <ChartSkeleton />
             ) : lineError ? (
               <p className="text-red-400">Error: {lineError}</p>
             ) : (
