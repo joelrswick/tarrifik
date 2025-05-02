@@ -34,7 +34,9 @@ export async function fetchTariffData(year: string = '2023'): Promise<TariffData
   }
 
   const data: CensusData = await response.json();
-  
+  if (!data || !Array.isArray(data.data)) {
+    throw new Error('No valid data returned from Census API');
+  }
   // Transform the data into a more usable format
   return data.data.map(row => ({
     year: row[0],

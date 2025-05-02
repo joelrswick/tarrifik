@@ -106,8 +106,10 @@ export default function Home() {
               <p className="text-gray-600">Loading data...</p>
             ) : error ? (
               <p className="text-red-600">Error: {error}</p>
-            ) : (
+            ) : Array.isArray(tariffData) && tariffData.length > 0 ? (
               <TariffChart data={tariffData} title="Top 10 Tariffs by Value (2023)" />
+            ) : (
+              <p className="text-red-600">No data available.</p>
             )}
           </div>
           {/* Analysis Section */}
