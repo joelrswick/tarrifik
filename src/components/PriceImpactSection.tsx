@@ -86,6 +86,16 @@ export default function PriceImpactSection() {
   const data = mockData[selected];
   const info = insights[selected];
 
+  if (!data || !info) {
+    return (
+      <section className="max-w-5xl mx-auto mt-12 mb-16 p-6 bg-white rounded-2xl shadow-lg">
+        <h2 className="text-3xl font-extrabold font-serif text-gray-900 mb-1">Tariff-Linked Price Impacts by Industry</h2>
+        <p className="text-lg text-gray-600 mb-6">How tariffs have influenced prices in key sectors</p>
+        <div className="text-red-600 font-semibold">Error: No data available for the selected industry.</div>
+      </section>
+    );
+  }
+
   return (
     <section className="max-w-5xl mx-auto mt-12 mb-16 p-6 bg-white rounded-2xl shadow-lg">
       <h2 className="text-3xl font-extrabold font-serif text-gray-900 mb-1">Tariff-Linked Price Impacts by Industry</h2>
