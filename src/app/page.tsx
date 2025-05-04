@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import CommodityChartGrid from '../components/CommodityChartGrid';
+// @ts-ignore
+import CommodityChartGrid from '../../components/CommodityChartGrid';
 
 export default function Home() {
   return (
