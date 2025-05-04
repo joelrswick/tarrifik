@@ -2,7 +2,7 @@
 
 import React from 'react';
 // @ts-ignore
-import CommodityChartGrid from '../../components/CommodityChartGrid';
+   import CommodityChartGrid from '../components/CommodityChartGrid';
 
 export default function Home() {
   return (
